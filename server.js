@@ -7,16 +7,30 @@ const app = express();
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public"))); // it points the public folder to the web root(/)
 
 app.get('/', function(req, res){
-    fs.readdir(`./files`, function(err, files){
-        res.render("index", {files:files});
-    })
-})
+    fs.readdir('./files', function(err, files){
+        const txtFiles = files.filter(file => file.endsWith('.txt'));  // added this line so that only txt file should render(ignoring .gitignore)
+        const titles = txtFiles.map(file => {
+            const content = fs.readFileSync(`./files/${file}`, "utf-8")
+            return content.split('\n')[0];
+        });
+        res.render("index", {files:txtFiles, titles: titles}); // so instead of {files:files} we use {files:txtFiles}
+    });
+});
+
+app.get('/file/:filename', function(req, res){
+    fs.readFile(`./files/${req.params.filename}`, "utf-8", function(err, filedata){
+        const lines = filedata.split('\n');
+        const title =lines[0];   // first line = original title
+        const details = lines.slice(1).join('\n');  // details from 2nd line onwards
+        res.render('show', {filename: title, filedata:details});
+    });
+});
 
 app.post('/create', function(req, res){
-    fs.writeFile(`./files/${req.body.title.split(' ').join('')}.txt`, req.body.details, function(err){
+    fs.writeFile(`./files/${req.body.title.split(' ').join('')}.txt`, `${req.body.title}\n${req.body.details}`, function(err){
         res.redirect("/")
     });
 })

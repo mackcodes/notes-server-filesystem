@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notes Taking App</title>
+    <title>Notes - fs</title>
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg"> // because express.static points public folder to root / so public is not necessary
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
@@ -17,10 +18,10 @@
         </div>
         <div class="tasks flex gap-3 flex-wrap p-10">
             <% if(files.length > 0){ %>
-                <% files.forEach(function(val){ %>
+                <% files.forEach(function(val, index){ %>
                     <div class="task min-w-72 px-3 py-4 rounded-md bg-zinc-800">
-                        <h1 class="text-white text-3xl tracking-tighter"><%= val %></h1>
-                        <a class="text-blue-500 inline-block mt-3" href=""><%%></a>
+                        <h1 class="text-white text-3xl tracking-tighter"><%= titles[index] %></h1>
+                        <a class="text-blue-500 inline-block mt-3" href="/file/<%= val %>">Read more</a>
                     </div>
                 <% })%>
             <% } else { %>
