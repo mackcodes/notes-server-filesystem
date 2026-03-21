@@ -29,6 +29,28 @@ app.get('/file/:filename', function(req, res){
     });
 });
 
+app.get('/edit/:filename', function(req, res){
+    fs.readFile(`./files/${req.params.filename}`, 'utf-8', function(err, data){
+        const details = data.split('\n').slice(1).join('\n'); // ← only details needs file reading
+        res.render('edit', { 
+            filename: req.params.filename, // ← from URL, no file read needed
+            details: details               // ← from file content
+        });
+    });
+});
+
+app.post('/edit', function(req, res){
+    const newName = req.body.new.replace('.txt', '') + '.txt';
+    const newTitle = req.body.new.replace('.txt', ''); // e.g. "newname"
+    const updatedContent = `${newTitle}\n${req.body.details}`;  //updates the file 
+
+    fs.rename(`./files/${req.body.previous}`, `./files/${newName}`, function(err){
+        fs.writeFile(`./files/${newName}`, updatedContent, function(err){   //updates the file(edits it)
+            res.redirect('/');
+        });
+    });
+});
+
 app.post('/create', function(req, res){
     fs.writeFile(`./files/${req.body.title.split(' ').join('')}.txt`, `${req.body.title}\n${req.body.details}`, function(err){
         res.redirect("/")

@@ -10,6 +10,7 @@
 - 💾 Store notes as `.txt` files locally
 - 🏠 View all notes on the home page
 - 🔍 Open and read individual notes
+- ✏️ Edit existing notes (rename + update content)
 - 🎨 Clean dark UI with Tailwind CSS
 
 ---
@@ -79,6 +80,7 @@ notes-server-filesystem/
 │   └── stylesheets/
 └── views/
     ├── index.ejs           ← home page
+    ├── edit.ejs            ← edit note form
     └── show.ejs            ← single note page
 ```
 
@@ -91,6 +93,33 @@ notes-server-filesystem/
 | `GET` | `/` | Render all notes |
 | `POST` | `/create` | Create a new note |
 | `GET` | `/file/:filename` | Render a single note |
+| `GET` | `/edit/:filename` | Render edit form for a note |
+| `POST` | `/edit` | Save note edits (rename + content update) |
+
+---
+
+## ✏️ How Editing Works
+
+1. Click **Edit** on a note card from the home page.
+2. The app opens `/edit/:filename` and pre-fills:
+    - current filename (readonly)
+    - editable new filename
+    - existing note details
+3. On submit, the app:
+    - renames the file if the name changed
+    - rewrites file content with updated title + details
+4. The title is stored on line 1 and details are stored from line 2 onward.
+
+Example update flow:
+
+```
+Old file: LearnNode.txt
+New file: LearnExpress.txt
+
+Final file content:
+LearnExpress
+Updated note details...
+```
 
 ---
 
@@ -289,7 +318,7 @@ kill -9 $(lsof -t -i:3000)
 
 ## 🔮 Future Improvements
 
-- [ ] Add note delete and edit features
+- [ ] Add note delete feature
 - [ ] Add validation for empty title/details
 - [ ] Sanitize title into safe filenames
 - [ ] Add timestamps (created/updated)
